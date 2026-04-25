@@ -1,4 +1,4 @@
-import { AppData, CheckRecord, MedTime } from './types';
+import { AppData, CheckRecord, MedTime, HealthRecord } from './types';
 
 function generateCheckRecords(): CheckRecord[] {
   const records: CheckRecord[] = [];
@@ -10,13 +10,11 @@ function generateCheckRecords(): CheckRecord[] {
     { medId: 'med-4', times: ['evening'] },
   ];
 
-  // Generate past 7 days with mostly checked records (simulating good compliance)
   for (let d = 6; d >= 1; d--) {
     const date = new Date(today);
     date.setDate(date.getDate() - d);
     const dateStr = date.toISOString().split('T')[0];
-    const shouldMiss = d === 3 || d === 5; // miss a couple days for realism
-
+    const shouldMiss = d === 3 || d === 5;
     for (const schedule of medSchedules) {
       for (const time of schedule.times) {
         if (!shouldMiss || time !== 'noon') {
@@ -26,13 +24,39 @@ function generateCheckRecords(): CheckRecord[] {
     }
   }
 
-  // Today: morning already taken
   const todayStr = '2026-04-25';
   records.push({ date: todayStr, medId: 'med-1', time: 'morning', checked: true });
   records.push({ date: todayStr, medId: 'med-2', time: 'morning', checked: true });
   records.push({ date: todayStr, medId: 'med-3', time: 'morning', checked: true });
 
   return records;
+}
+
+function generateHealthRecords(): HealthRecord[] {
+  // 王阿姨的血压/血糖数据（近14天，略高但在控制范围内）
+  const base = [
+    { systolic: 148, diastolic: 92, bloodSugar: 7.8, heartRate: 74 },
+    { systolic: 152, diastolic: 94, bloodSugar: 8.1, heartRate: 76 },
+    { systolic: 145, diastolic: 90, bloodSugar: 7.5, heartRate: 72 },
+    { systolic: 143, diastolic: 88, bloodSugar: 7.2, heartRate: 71 },
+    { systolic: 156, diastolic: 96, bloodSugar: 8.4, heartRate: 78 }, // 偏高
+    { systolic: 150, diastolic: 92, bloodSugar: 7.9, heartRate: 75 },
+    { systolic: 147, diastolic: 91, bloodSugar: 7.6, heartRate: 73 },
+    { systolic: 144, diastolic: 89, bloodSugar: 7.3, heartRate: 72 },
+    { systolic: 141, diastolic: 87, bloodSugar: 7.0, heartRate: 70 },
+    { systolic: 138, diastolic: 86, bloodSugar: 6.8, heartRate: 69 },
+    { systolic: 142, diastolic: 88, bloodSugar: 7.1, heartRate: 71 },
+    { systolic: 145, diastolic: 90, bloodSugar: 7.4, heartRate: 73 },
+    { systolic: 143, diastolic: 89, bloodSugar: 7.2, heartRate: 72 },
+    { systolic: 140, diastolic: 87, bloodSugar: 6.9, heartRate: 70 }, // 今天，趋于稳定
+  ];
+
+  const today = new Date('2026-04-25');
+  return base.map((v, i) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - (13 - i));
+    return { date: d.toISOString().split('T')[0], ...v };
+  });
 }
 
 export const mockData: AppData = {
@@ -132,17 +156,8 @@ export const mockData: AppData = {
     department: '内分泌科',
   },
   familyAccounts: [
-    {
-      id: 'family-1',
-      name: '王建国',
-      relation: '儿子',
-      phone: '138****8888',
-    },
-    {
-      id: 'family-2',
-      name: '李梅',
-      relation: '女儿',
-      phone: '139****9999',
-    },
+    { id: 'family-1', name: '王建国', relation: '儿子', phone: '138****8888' },
+    { id: 'family-2', name: '李梅', relation: '女儿', phone: '139****9999' },
   ],
+  healthRecords: generateHealthRecords(),
 };

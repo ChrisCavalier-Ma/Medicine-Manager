@@ -6,7 +6,9 @@ import { getData } from '@/lib/storage';
 import HealthInfoCard from '@/components/profile/HealthInfoCard';
 import AdherenceChart from '@/components/profile/AdherenceChart';
 import FamilyAccountCard from '@/components/profile/FamilyAccountCard';
+import HealthTrendChart from '@/components/profile/HealthTrendChart';
 import { MessageCircle, ChevronRight, Settings, Bell, Shield } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProfilePage() {
   const [data, setData] = useState<AppData | null>(null);
@@ -43,35 +45,39 @@ export default function ProfilePage() {
         {/* Health info */}
         <HealthInfoCard user={data.user} />
 
-        {/* Adherence chart */}
+        {/* Health trend chart (blood pressure + blood sugar) */}
+        {data.healthRecords && data.healthRecords.length > 0 && (
+          <HealthTrendChart records={data.healthRecords} />
+        )}
+
+        {/* Weekly adherence chart */}
         <AdherenceChart checkRecords={data.checkRecords} medications={data.medications} />
 
         {/* Family accounts */}
         <FamilyAccountCard accounts={data.familyAccounts} />
 
         {/* AI consultation entry */}
-        <button
-          className="w-full app-card px-4 py-4 flex items-center gap-3 active:opacity-90 text-left"
-          onClick={() => alert('AI问诊功能即将上线，敬请期待！\n（演示模拟）')}
-        >
-          <div
-            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: 'linear-gradient(135deg, #00B4B4 0%, #36CFC9 100%)' }}
-          >
-            <MessageCircle size={20} color="#fff" />
+        <Link href="/consult">
+          <div className="app-card px-4 py-4 flex items-center gap-3 active:opacity-90">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+              style={{ background: 'linear-gradient(135deg, #00B4B4 0%, #36CFC9 100%)' }}
+            >
+              <MessageCircle size={20} color="#fff" />
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-semibold text-[#1A1A1A]">AI 智能问诊</div>
+              <div className="text-xs text-[#999] mt-0.5">7×24小时用药咨询，快速解答</div>
+            </div>
+            <div
+              className="px-2.5 py-1 rounded-full text-xs font-semibold"
+              style={{ background: '#F0FFFE', color: '#00807A' }}
+            >
+              免费
+            </div>
+            <ChevronRight size={16} color="#CCC" />
           </div>
-          <div className="flex-1">
-            <div className="text-sm font-semibold text-[#1A1A1A]">AI 智能问诊</div>
-            <div className="text-xs text-[#999] mt-0.5">7×24小时用药咨询，快速解答</div>
-          </div>
-          <div
-            className="px-2.5 py-1 rounded-full text-xs font-semibold"
-            style={{ background: '#F0FFFE', color: '#00807A' }}
-          >
-            免费
-          </div>
-          <ChevronRight size={16} color="#CCC" />
-        </button>
+        </Link>
 
         {/* Settings list */}
         <div className="app-card overflow-hidden">
@@ -82,9 +88,7 @@ export default function ProfilePage() {
             <button
               key={label}
               className="w-full flex items-center gap-3 px-4 py-3.5 active:bg-[#F9F9F9] text-left"
-              style={{
-                borderTop: idx > 0 ? '1px solid #F5F5F5' : 'none',
-              }}
+              style={{ borderTop: idx > 0 ? '1px solid #F5F5F5' : 'none' }}
             >
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-[#F5F5F5]">
                 <Icon size={16} color="#666" />

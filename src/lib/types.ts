@@ -56,6 +56,14 @@ export interface FamilyAccount {
   phone: string;
 }
 
+export interface HealthRecord {
+  date: string;       // YYYY-MM-DD
+  systolic: number;   // 收缩压 mmHg
+  diastolic: number;  // 舒张压 mmHg
+  bloodSugar: number; // 空腹血糖 mmol/L
+  heartRate?: number; // 心率 bpm
+}
+
 export interface AppData {
   user: User;
   medications: Medication[];
@@ -63,4 +71,5 @@ export interface AppData {
   prescriptions: Prescription[];
   revisit: RevisitInfo;
   familyAccounts: FamilyAccount[];
+  healthRecords?: HealthRecord[];
 }
