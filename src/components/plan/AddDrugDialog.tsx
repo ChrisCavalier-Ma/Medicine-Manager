@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Medication, MedTime, MedFrequency } from '@/lib/types';
 import {
   Dialog,
@@ -20,6 +20,20 @@ interface AddDrugDialogProps {
 
 const COLORS = ['#1677FF', '#00B4B4', '#FF7A45', '#9254DE', '#52C41A', '#FAAD14'];
 
+const defaultForm = {
+  name: '',
+  spec: '',
+  dosage: '',
+  frequency: '每日一次' as MedFrequency,
+  times: ['morning'] as MedTime[],
+  amountPerDose: 1,
+  stockDays: 30,
+  totalDays: 30,
+  unit: '片',
+  color: COLORS[0],
+  indication: '',
+};
+
 const freqOptions: { value: MedFrequency; times: MedTime[] }[] = [
   { value: '每日一次', times: ['morning'] },
   { value: '每日两次', times: ['morning', 'evening'] },
@@ -33,47 +47,29 @@ const timeLabels: Record<MedTime, string> = {
 };
 
 export default function AddDrugDialog({ open, onClose, onSave, editMed }: AddDrugDialogProps) {
-  const [form, setForm] = useState<{
-    name: string;
-    spec: string;
-    dosage: string;
-    frequency: MedFrequency;
-    times: MedTime[];
-    amountPerDose: number;
-    stockDays: number;
-    totalDays: number;
-    unit: string;
-    color: string;
-    indication: string;
-  }>(
-    editMed
-      ? {
-          name: editMed.name,
-          spec: editMed.spec,
-          dosage: editMed.dosage,
-          frequency: editMed.frequency,
-          times: editMed.times,
-          amountPerDose: editMed.amountPerDose,
-          stockDays: editMed.stockDays,
-          totalDays: editMed.totalDays,
-          unit: editMed.unit,
-          color: editMed.color,
-          indication: editMed.indication || '',
-        }
-      : {
-          name: '',
-          spec: '',
-          dosage: '',
-          frequency: '每日一次',
-          times: ['morning'],
-          amountPerDose: 1,
-          stockDays: 30,
-          totalDays: 30,
-          unit: '片',
-          color: COLORS[0],
-          indication: '',
-        }
-  );
+  const [form, setForm] = useState(defaultForm);
+
+  useEffect(() => {
+    if (open) {
+      setForm(
+        editMed
+          ? {
+              name: editMed.name,
+              spec: editMed.spec,
+              dosage: editMed.dosage,
+              frequency: editMed.frequency,
+              times: editMed.times,
+              amountPerDose: editMed.amountPerDose,
+              stockDays: editMed.stockDays,
+              totalDays: editMed.totalDays,
+              unit: editMed.unit,
+              color: editMed.color,
+              indication: editMed.indication || '',
+            }
+          : defaultForm
+      );
+    }
+  }, [open, editMed]);
 
   const handleFreqChange = (freq: MedFrequency) => {
     const opt = freqOptions.find((o) => o.value === freq);

@@ -11,7 +11,11 @@ export function getData(): AppData {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(mockData));
       return mockData;
     }
-    return JSON.parse(stored) as AppData;
+    const parsed = JSON.parse(stored) as AppData;
+    if (!parsed.healthRecords) {
+      parsed.healthRecords = mockData.healthRecords;
+    }
+    return parsed;
   } catch {
     return mockData;
   }
